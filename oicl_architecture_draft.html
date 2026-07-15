@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OICL — AI/ML, GenAI & Agentic AI Reference Architecture (Draft)</title>
+<style>
+  :root{
+    --navy:#1E3A5F;
+    --navy-dark:#152B47;
+    --ink:#1F2937;
+    --muted:#6B7280;
+    --gcc-bg:#FFFBEB;
+    --gcc-border:#B45309;
+    --saas-bg:#EFF6FF;
+    --saas-border:#2563EB;
+    --page:#F7F8FA;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; padding:24px; background:var(--page);
+    font-family:'Segoe UI', Arial, sans-serif; color:var(--ink);
+  }
+  h1{font-size:20px; margin:0 0 2px 0; color:var(--navy-dark);}
+  .subtitle{font-size:12.5px; color:var(--muted); margin:0 0 14px 0;}
+
+  .legend{
+    display:flex; flex-wrap:wrap; gap:18px; align-items:center;
+    background:#fff; border:1px solid #E2E5EA; border-radius:8px;
+    padding:10px 16px; margin-bottom:16px; font-size:12px;
+  }
+  .legend-item{display:flex; align-items:center; gap:6px;}
+  .swatch{width:14px; height:14px; border-radius:3px; display:inline-block;}
+  .tag{
+    display:inline-block; font-size:9.5px; font-weight:700; color:#fff;
+    border-radius:3px; padding:1px 5px; margin-left:4px;
+  }
+
+  .layout{display:grid; grid-template-columns: 1fr 230px; gap:14px;}
+  .main{display:flex; flex-direction:column; gap:12px;}
+
+  .section{background:#fff; border:1px solid #E2E5EA; border-radius:8px; overflow:hidden;}
+  .section-head{
+    background:var(--navy); color:#fff; font-size:13px; font-weight:600;
+    padding:7px 14px; letter-spacing:.2px;
+  }
+  .section-body{padding:10px 14px; display:flex; flex-wrap:wrap; gap:8px;}
+  .subpanels{display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; padding:10px;}
+  .subpanel{border:1px solid #E9EBEF; border-radius:6px; overflow:hidden;}
+  .subpanel-head{background:#EEF2F7; color:var(--navy-dark); font-size:11.5px; font-weight:700; padding:5px 10px;}
+  .subpanel-body{padding:8px; display:flex; flex-direction:column; gap:6px;}
+
+  .chip{
+    border-radius:5px; padding:5px 8px; font-size:11.5px; line-height:1.25;
+    display:flex; align-items:center; justify-content:space-between; gap:6px;
+    border-left:4px solid transparent;
+  }
+  .chip .name{font-weight:600;}
+  .chip .sub{display:block; font-weight:400; font-size:9.5px; color:var(--muted);}
+  .chip.gcc{background:var(--gcc-bg); border-left-color:var(--gcc-border);}
+  .chip.saas{background:var(--saas-bg); border-left-color:var(--saas-border);}
+  .vtags{display:flex; gap:2px; flex-shrink:0;}
+  .v{width:15px; height:15px; border-radius:3px; color:#fff; font-size:8.5px; font-weight:800;
+     display:flex; align-items:center; justify-content:center;}
+  .v.M{background:#7C3AED;} .v.A{background:#0D9488;} .v.F{background:#E11D48;} .v.S{background:#6B7280;}
+
+  .rail{display:flex; flex-direction:column; gap:12px;}
+  .rail .section-body{flex-direction:column;}
+
+  .sources{
+    display:flex; gap:8px; flex-wrap:wrap; background:#fff; border:1px dashed #C9CDD3;
+    border-radius:8px; padding:10px 14px; font-size:11.5px; color:var(--muted);
+  }
+  .src-item{background:#F3F4F6; border-radius:5px; padding:5px 9px;}
+
+  .flow-arrow{text-align:center; color:#9CA3AF; font-size:14px; margin:-4px 0;}
+
+  .netbar{
+    background:#fff; border:1px solid #E2E5EA; border-radius:8px; padding:10px 14px;
+    display:flex; align-items:center; gap:18px; font-size:11.5px;
+  }
+  .netbar b{color:var(--navy-dark); font-size:12px;}
+  .boundary-note{
+    font-size:11px; color:#92400E; background:#FFFBEB; border:1px dashed var(--gcc-border);
+    border-radius:6px; padding:6px 10px; margin-top:4px;
+  }
+</style>
+</head>
+<body>
+
+<h1>OICL — AI/ML, GenAI &amp; Agentic AI Reference Architecture <span style="font-weight:400;color:var(--muted);">(Working Draft)</span></h1>
+<p class="subtitle">All 31 services from the input sheet, arranged as a logical data/AI flow · box color = hosting boundary · square badges = vertical(s) served</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="swatch" style="background:var(--gcc-bg); border:1px solid var(--gcc-border);"></span> GCC (sensitive/raw data boundary)</div>
+  <div class="legend-item"><span class="swatch" style="background:var(--saas-bg); border:1px solid var(--saas-border);"></span> AWS Public Cloud / SaaS (bounded, stateless calls)</div>
+  <div class="legend-item"><span class="v M">M</span> AI/ML</div>
+  <div class="legend-item"><span class="v A">A</span> Agentic AI</div>
+  <div class="legend-item"><span class="v F">F</span> FMS (Fraud)</div>
+  <div class="legend-item"><span class="v S">S</span> Shared / Cross-cutting</div>
+</div>
+
+<div class="layout">
+  <div class="main" id="main"></div>
+  <div class="rail" id="rail"></div>
+</div>
+
+<div class="flow-arrow" style="margin-top:12px;">↓</div>
+<div class="netbar" id="netbar"></div>
+
+<script>
+// ---- Data model (edit here to iterate quickly) ----
+const V = { M:'M', A:'A', F:'F', S:'S' };
+
+const mainLayers = [
+  { title:"Data Ingestion & Streaming Layer", services:[
+    {name:"Amazon S3", sub:"Data lake / RAG KB / model artifacts", host:"gcc", v:[V.S]},
+    {name:"AWS Glue Schema Registry", sub:"Kafka schema governance", host:"saas", v:[V.M,V.F]},
+    {name:"Amazon Kinesis Data Streams", sub:"Real-time txn/claim events", host:"gcc", v:[V.F]},
+    {name:"Amazon MSK", sub:"Event streaming backbone", host:"gcc", v:[V.M,V.F]},
+    {name:"Amazon EventBridge", sub:"Pipeline & alert triggers", host:"gcc", v:[V.M,V.F]},
+    {name:"Amazon SNS / SQS", sub:"Channel message queueing", host:"gcc", v:[V.A]},
+  ]},
+  { title:"Orchestration & Integration Layer", services:[
+    {name:"Amazon MWAA", sub:"Managed Airflow — ML/FMS pipelines", host:"gcc", v:[V.M,V.F]},
+    {name:"AWS Step Functions", sub:"Doc intake / task queueing", host:"gcc", v:[V.A]},
+    {name:"AWS Lambda", sub:"Event-driven triggers & tool calls", host:"gcc", v:[V.S]},
+  ]},
+  { title:"Processing & Compute Layer", services:[
+    {name:"Amazon EMR", sub:"Spark batch — feature prep", host:"gcc", v:[V.M,V.F]},
+    {name:"Amazon EKS", sub:"Agent runtime, tools, FMS case app", host:"gcc", v:[V.S]},
+    {name:"Amazon ElastiCache (Redis)", sub:"Dedup / fast lookup cache", host:"gcc", v:[V.A,V.F]},
+    {name:"Amazon DynamoDB", sub:"Agent session memory, case state", host:"gcc", v:[V.A,V.F]},
+  ]},
+];
+
+const subpanels = [
+  { title:"ML & GenAI Core", services:[
+    {name:"Amazon SageMaker", sub:"Training, pipelines, feature store", host:"gcc", v:[V.M,V.F]},
+    {name:"Amazon Bedrock", sub:"FM backbone (Claude, Titan)", host:"saas", v:[V.M,V.A]},
+    {name:"Bedrock AgentCore", sub:"Agent memory/gateway/identity", host:"gcc", v:[V.A]},
+    {name:"Bedrock Guardrails", sub:"Grounding & prompt-injection defense", host:"saas", v:[V.M,V.A]},
+  ]},
+  { title:"Document, Vision & Speech AI", services:[
+    {name:"Amazon Comprehend", sub:"Sentiment / NLP categorization", host:"gcc", v:[V.M]},
+    {name:"Amazon Rekognition", sub:"Damage / medical image analytics", host:"gcc", v:[V.M]},
+    {name:"Amazon Textract", sub:"OCR — claims, KYC, policy docs", host:"gcc", v:[V.M,V.A]},
+    {name:"Amazon Transcribe", sub:"IVR speech-to-text", host:"gcc", v:[V.A]},
+    {name:"Amazon Polly", sub:"IVR text-to-speech", host:"saas", v:[V.A]},
+  ]},
+  { title:"Search, Graph & Fraud Analytics", services:[
+    {name:"Amazon OpenSearch", sub:"RAG vector search + case analytics", host:"gcc", v:[V.A,V.F]},
+    {name:"Amazon Neptune", sub:"Fraud ring / link analysis graph", host:"gcc", v:[V.F]},
+  ]},
+];
+
+const railSections = [
+  { title:"Governance & Security", services:[
+    {name:"IAM (Roles)", sub:"Cross-account / cross-VPC auth", host:"gcc", v:[V.S]},
+    {name:"AWS Secrets Manager", sub:"DB creds, API keys", host:"gcc", v:[V.S]},
+    {name:"AWS KMS", sub:"Encryption key management", host:"gcc", v:[V.S]},
+    {name:"Amazon CloudWatch", sub:"Model/agent/fraud monitoring", host:"gcc", v:[V.S]},
+    {name:"AWS CloudTrail", sub:"Agent decision & fraud audit trail", host:"gcc", v:[V.A,V.F]},
+    {name:"AWS WAF", sub:"Protects FMS case app & APIs", host:"gcc", v:[V.F]},
+  ]},
+  { title:"Application & Delivery", services:[
+    {name:"Web / Mobile App", sub:"Portal + app channel", host:"gcc", v:[V.A]},
+    {name:"WhatsApp Business API", sub:"Chat channel incl. media", host:"gcc", v:[V.A]},
+    {name:"IVR / Voice", sub:"Speech channel (Transcribe+Polly)", host:"gcc", v:[V.A]},
+    {name:"Social Channels", sub:"Intake & notifications", host:"gcc", v:[V.A]},
+  ]},
+];
+
+function chip(s){
+  const vb = s.v.map(x=>`<span class="v ${x}">${x}</span>`).join("");
+  return `<div class="chip ${s.host}">
+    <div><span class="name">${s.name}</span><span class="sub">${s.sub}</span></div>
+    <div class="vtags">${vb}</div>
+  </div>`;
+}
+
+const mainEl = document.getElementById('main');
+mainLayers.forEach((layer,i)=>{
+  mainEl.innerHTML += `<div class="section">
+    <div class="section-head">${layer.title}</div>
+    <div class="section-body">${layer.services.map(chip).join("")}</div>
+  </div>`;
+  if(i < mainLayers.length-1) mainEl.innerHTML += `<div class="flow-arrow">↓</div>`;
+});
+mainEl.innerHTML += `<div class="flow-arrow">↓</div>`;
+mainEl.innerHTML += `<div class="section">
+  <div class="section-head">AI, GenAI & Agentic Services Layer</div>
+  <div class="subpanels">
+    ${subpanels.map(p=>`<div class="subpanel">
+      <div class="subpanel-head">${p.title}</div>
+      <div class="subpanel-body">${p.services.map(chip).join("")}</div>
+    </div>`).join("")}
+  </div>
+</div>`;
+mainEl.innerHTML += `<div class="flow-arrow">↓</div>`;
+
+const railEl = document.getElementById('rail');
+railSections.forEach(sec=>{
+  railEl.innerHTML += `<div class="section">
+    <div class="section-head">${sec.title}</div>
+    <div class="section-body">${sec.services.map(chip).join("")}</div>
+  </div>`;
+});
+
+document.getElementById('netbar').innerHTML = `
+  <b>Networking &amp; Boundary:</b>
+  <span class="chip gcc" style="border-left-width:4px;"><div><span class="name">AWS PrivateLink / Transit Gateway</span><span class="sub">the GCC ↔ AWS SaaS connector</span></div><div class="vtags"><span class="v S">S</span></div></span>
+  <span style="color:var(--muted);">— this is the only wire that should cross from the GCC boundary out to Bedrock, Bedrock Guardrails, Polly &amp; Glue Schema Registry.</span>
+`;
+
+// prepend data sources
+document.querySelector('.layout').insertAdjacentHTML('beforebegin', `
+  <div class="sources">
+    <b style="color:var(--navy-dark); margin-right:6px;">Data Sources →</b>
+    <span class="src-item">Policy Admin</span><span class="src-item">Claims System</span>
+    <span class="src-item">Agent360 / Customer360</span><span class="src-item">Call Center</span>
+    <span class="src-item">Third-party fraud data</span><span class="src-item">Docs / KYC / Images</span>
+  </div>
+  <div class="flow-arrow">↓</div>
+`);
+</script>
+</body>
+</html>
