@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OICL — Application-Level Architecture (v2)</title>
+<style>
+  :root{
+    --navy:#1E3A5F; --navy-dark:#152B47; --ink:#1F2937; --muted:#6B7280;
+    --gcc-bg:#FFFBEB; --gcc-border:#B45309;
+    --saas-bg:#EFF6FF; --saas-border:#2563EB;
+    --page:#F7F8FA;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; padding:24px; background:var(--page); font-family:'Segoe UI',Arial,sans-serif; color:var(--ink);}
+  h1{font-size:20px; margin:0 0 2px 0; color:var(--navy-dark);}
+  .subtitle{font-size:12.5px; color:var(--muted); margin:0 0 16px 0;}
+
+  .legend{display:flex; flex-wrap:wrap; gap:16px; align-items:center; background:#fff;
+    border:1px solid #E2E5EA; border-radius:8px; padding:9px 16px; margin-bottom:16px; font-size:11.5px;}
+  .legend-item{display:flex; align-items:center; gap:6px;}
+  .swatch{width:13px; height:13px; border-radius:3px; display:inline-block;}
+  .v{width:15px; height:15px; border-radius:3px; color:#fff; font-size:8.5px; font-weight:800;
+     display:flex; align-items:center; justify-content:center;}
+  .v.M{background:#7C3AED;} .v.A{background:#0D9488;} .v.F{background:#E11D48;} .v.S{background:#6B7280;}
+
+  .flow-arrow{text-align:center; color:#9CA3AF; font-size:16px; margin:2px 0;}
+  .layout{display:grid; grid-template-columns:1fr 225px; gap:14px;}
+  .main{display:flex; flex-direction:column;}
+  .rail{display:flex; flex-direction:column; gap:12px;}
+
+  .band{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; background:#fff;
+    border:1px dashed #C9CDD3; border-radius:8px; padding:10px 14px;}
+  .pill{background:#F3F4F6; border-radius:20px; padding:5px 12px; font-size:11.5px; color:var(--ink);}
+
+  .section{background:#fff; border:1px solid #E2E5EA; border-radius:8px; overflow:hidden;}
+  .section-head{background:var(--navy); color:#fff; font-size:13px; font-weight:600; padding:7px 14px;}
+  .section-body{padding:10px 14px;}
+  .subrow-label{font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; margin:6px 0 4px 0;}
+  .chiprow{display:flex; flex-wrap:wrap; gap:8px;}
+
+  .chip{border-radius:5px; padding:5px 8px; font-size:11.5px; line-height:1.25;
+    display:flex; align-items:center; gap:6px; border-left:4px solid transparent;}
+  .chip .name{font-weight:600;} .chip .sub{display:block; font-weight:400; font-size:9.5px; color:var(--muted);}
+  .chip.gcc{background:var(--gcc-bg); border-left-color:var(--gcc-border);}
+  .chip.saas{background:var(--saas-bg); border-left-color:var(--saas-border);}
+  .chip.plain{background:#F3F4F6;}
+  .vtags{display:flex; gap:2px; flex-shrink:0;}
+
+  .platforms{display:grid; grid-template-columns:1.1fr 1.4fr 0.9fr; gap:10px; padding:10px;}
+  .plat{border:1px solid #E9EBEF; border-radius:6px; overflow:hidden;}
+  .plat-head{background:#EEF2F7; color:var(--navy-dark); font-size:11.5px; font-weight:700; padding:6px 10px;}
+  .plat-body{padding:8px; display:flex; flex-direction:column; gap:8px;}
+  .cat-chip{background:#F9FAFB; border:1px solid #E9EBEF; border-radius:5px; padding:6px 9px; font-size:11px;}
+  .cat-chip b{font-size:11.5px;}
+  .cat-chip .count{color:var(--muted); font-size:10px;}
+
+  .agent-flow{display:flex; flex-wrap:wrap; align-items:center; gap:3px; font-size:9.5px;}
+  .agent{background:#ECFDF5; border:1px solid #A7F3D0; border-radius:4px; padding:3px 6px; white-space:nowrap;}
+  .agent.gov{background:#EEF2FF; border-color:#C7D2FE; font-weight:700;}
+  .agent.excluded{background:#F3F4F6; border:1px dashed #D1D5DB; color:#9CA3AF; text-decoration:line-through;}
+  .agent-sep{color:#D1D5DB;}
+  .plat-note{font-size:10px; color:var(--muted); margin-top:2px;}
+
+  .fms-note{font-size:11px; color:#92400E; background:#FFFBEB; border:1px dashed var(--gcc-border);
+    border-radius:6px; padding:6px 9px; margin-top:4px;}
+
+  .infra-groups{display:grid; grid-template-columns:repeat(3,1fr); gap:8px; padding:10px;}
+  .igroup{border:1px solid #E9EBEF; border-radius:6px; padding:7px 8px;}
+  .igroup-title{font-size:10.5px; font-weight:700; color:var(--navy-dark); margin-bottom:5px;}
+  .igroup .chip{margin-bottom:5px; width:100%;}
+
+  .data-bar{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .data-bar .pill{background:#EEF2F7;}
+  .oos{font-size:10.5px; color:var(--muted); font-style:italic;}
+</style>
+</head>
+<body>
+
+<h1>OICL — AI/ML, GenAI &amp; Agentic AI Architecture <span style="font-weight:400;color:var(--muted);">— Application View (v2)</span></h1>
+<p class="subtitle">User → Application Layer → Business Platforms (Sheet 2 / Sheet 3) → Enabling Services (Sheet 1) → Data. Rebuilt around the actual request flow rather than the earlier services-catalog layout.</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="swatch" style="background:var(--gcc-bg); border:1px solid var(--gcc-border);"></span> GCC-hosted</div>
+  <div class="legend-item"><span class="swatch" style="background:var(--saas-bg); border:1px solid var(--saas-border);"></span> AWS SaaS-hosted</div>
+  <div class="legend-item"><span class="v M">M</span> AI/ML</div>
+  <div class="legend-item"><span class="v A">A</span> Agentic AI</div>
+  <div class="legend-item"><span class="v F">F</span> FMS</div>
+  <div class="legend-item"><span class="v S">S</span> Shared</div>
+</div>
+
+<div class="layout">
+  <div class="main" id="main"></div>
+  <div class="rail" id="rail"></div>
+</div>
+
+<script>
+const V = { M:'M', A:'A', F:'F', S:'S' };
+const chip = s => `<div class="chip ${s.host||'plain'}">
+  <div><span class="name">${s.name}</span>${s.sub?`<span class="sub">${s.sub}</span>`:''}</div>
+  ${s.v?`<div class="vtags">${s.v.map(x=>`<span class="v ${x}">${x}</span>`).join('')}</div>`:''}
+</div>`;
+
+const main = document.getElementById('main');
+
+// USERS
+main.innerHTML += `<div class="band">
+  ${['Policyholders / Customers','Insurance Agents & Intermediaries','Claims Handlers / Surveyors','Underwriters','Business Users (Ops, Marketing, Supervisors)']
+    .map(u=>`<span class="pill">${u}</span>`).join('')}
+</div><div class="flow-arrow">↓ interacts with</div>`;
+
+// APPLICATION LAYER (channels + orchestration together, per the requested framing)
+main.innerHTML += `<div class="section">
+  <div class="section-head">Application Layer — the only thing users ever touch</div>
+  <div class="section-body">
+    <div class="subrow-label">Channels</div>
+    <div class="chiprow">
+      ${['Web Portal','Mobile App','WhatsApp','IVR / Voice','Social Media','Agent360 / Customer360 Portal'].map(c=>`<span class="chip plain"><div class="name">${c}</div></span>`).join('')}
+    </div>
+    <div class="subrow-label">Application / Orchestration Services</div>
+    <div class="chiprow">
+      ${[
+        {name:'API Gateway (Kong)', sub:'Routing, rate limits, API mgmt'},
+        {name:'Auth & Identity', sub:'Cognito / Keycloak / IAM'},
+        {name:'FMS Case Management App', sub:'Runs on EKS'},
+        {name:'Agent/Bot Orchestrator', sub:'Channel intake → Step Functions/SNS-SQS'},
+        {name:'BI/Reporting Front-end', sub:'Amazon QuickSight'},
+      ].map(c=>`<span class="chip plain"><div><span class="name">${c.name}</span><span class="sub">${c.sub}</span></div></span>`).join('')}
+    </div>
+  </div>
+</div><div class="flow-arrow">↓ routes requests to</div>`;
+
+// BUSINESS PLATFORMS
+const aimlCats = [
+  {name:'Sales & Agent Analytics', count:'6 use cases', ex:'Agent segmentation, lead scoring, agent/supervisor nudges, agent churn, eligibility nudges'},
+  {name:'Customer Engagement & Retention', count:'14 use cases', ex:'Renewal propensity, upsell/cross-sell, next-best-offer, drop-off prediction, lapsed revival, clickstream, cohorts, heatmaps'},
+  {name:'Claims, Risk & Underwriting Analytics', count:'8 use cases', ex:'Fraud claim scoring, sentiment analysis, medical UW imaging, NLP incident tagging, severity/frequency, loss ratio, UW risk scoring'},
+  {name:'GenAI', count:'1 use case', ex:'Multilingual sales pitch generation (RAG)'},
+];
+const motorAgents = ['FNOL Intake','Coverage Verification','Document Intelligence','Damage Assessment','Surveyor Coordination','Fraud & Risk','Reserve Recommendation','Settlement Calculation','Liability & Compliance','Approval & Escalation','Payment & Communication'];
+const digitalAgents = [{n:'Omnichannel Intake', ex:true},{n:'Advisory'},{n:'Quotation'},{n:'Underwriting'},{n:'Document/KYC'},{n:'Compliance'},{n:'Issuance'},{n:'Service Triage'},{n:'Rules Evaluation'},{n:'Service Execution'},{n:'Escalation & Fraud'}];
+
+function agentFlow(list, gov){
+  let html = list.map((a,i)=>{
+    const excluded = typeof a === 'object' && a.ex;
+    const label = typeof a === 'object' ? a.n : a;
+    return `<span class="agent${excluded?' excluded':''}">${i+1}. ${label}</span>`;
+  }).join(`<span class="agent-sep">→</span>`);
+  html += `<span class="agent-sep">→</span><span class="agent gov">${gov}</span>`;
+  return html;
+}
+
+main.innerHTML += `<div class="section">
+  <div class="section-head">Business Platforms — the systems the Application Layer talks to (Sheet 2 &amp; Sheet 3)</div>
+  <div class="platforms">
+    <div class="plat">
+      <div class="plat-head">AI/ML Analytics Platform · 29 use cases</div>
+      <div class="plat-body">
+        ${aimlCats.map(c=>`<div class="cat-chip"><b>${c.name}</b> <span class="count">(${c.count})</span><div class="sub" style="font-size:10px;color:var(--muted);margin-top:2px;">${c.ex}</div></div>`).join('')}
+        <div class="plat-note">Runs as training/inference jobs &amp; endpoints on SageMaker (GCC) — see Enabling Services below.</div>
+      </div>
+    </div>
+    <div class="plat">
+      <div class="plat-head">Agentic AI Platforms · 23 agents in scope</div>
+      <div class="plat-body">
+        <div class="cat-chip"><b>Motor Claims Platform</b> <span class="count">(12 agents)</span>
+          <div class="agent-flow" style="margin-top:5px;">${agentFlow(motorAgents,'Governance Layer')}</div>
+        </div>
+        <div class="cat-chip"><b>Digital Agent/Office Platform</b> <span class="count">(11 of 12 in scope)</span>
+          <div class="agent-flow" style="margin-top:5px;">${agentFlow(digitalAgents,'Governance Layer')}</div>
+        </div>
+        <div class="plat-note">Shared always-on: channel integrations + RAG content pipeline. Runs on EKS + Bedrock AgentCore (GCC), reasoning via Bedrock (SaaS).</div>
+      </div>
+    </div>
+    <div class="plat">
+      <div class="plat-head">Fraud Management System (FMS)</div>
+      <div class="plat-body">
+        <div class="cat-chip"><b>Real-time fraud &amp; link analysis</b><div class="sub" style="font-size:10px;color:var(--muted);margin-top:2px;">Fed by fraud claim scoring model (AI/ML #17) + Fraud &amp; Risk Agent (Motor Claims #6)</div></div>
+        <div class="cat-chip"><b>Footprint services</b><div class="sub" style="font-size:10px;color:var(--muted);margin-top:2px;">Neptune, Kinesis, DynamoDB, OpenSearch, WAF</div></div>
+        <div class="fms-note">No dedicated FMS use-case sheet was provided (unlike Sheet 2/3) — flag it if one exists so this platform can be detailed the same way.</div>
+      </div>
+    </div>
+  </div>
+</div><div class="flow-arrow">↓ calls</div>`;
+
+// ENABLING SERVICES
+const infraGroups = [
+  {title:'Model Training, Hosting & Reasoning', items:[
+    {name:'Amazon SageMaker', sub:'Training, pipelines, feature store', host:'gcc', v:[V.M,V.F]},
+    {name:'Amazon Bedrock', sub:'FM backbone', host:'saas', v:[V.M,V.A]},
+    {name:'Bedrock AgentCore', sub:'Agent memory/gateway', host:'gcc', v:[V.A]},
+    {name:'Bedrock Guardrails', sub:'Grounding & safety', host:'saas', v:[V.M,V.A]},
+  ]},
+  {title:'Document, Vision & Speech AI', items:[
+    {name:'Amazon Comprehend', sub:'NLP/sentiment', host:'gcc', v:[V.M]},
+    {name:'Amazon Rekognition', sub:'Image analytics', host:'gcc', v:[V.M]},
+    {name:'Amazon Textract', sub:'OCR/Document AI', host:'gcc', v:[V.M,V.A]},
+    {name:'Amazon Transcribe', sub:'Speech-to-text', host:'gcc', v:[V.A]},
+    {name:'Amazon Polly', sub:'Text-to-speech', host:'saas', v:[V.A]},
+  ]},
+  {title:'Search & Graph', items:[
+    {name:'Amazon OpenSearch', sub:'RAG vector search + case analytics', host:'gcc', v:[V.A,V.F]},
+    {name:'Amazon Neptune', sub:'Fraud link analysis', host:'gcc', v:[V.F]},
+  ]},
+  {title:'Streaming & Messaging', items:[
+    {name:'Amazon Kinesis', sub:'Real-time claim/txn events', host:'gcc', v:[V.F]},
+    {name:'Amazon MSK', sub:'Event streaming backbone', host:'gcc', v:[V.M,V.F]},
+    {name:'Amazon EventBridge', sub:'Pipeline/alert triggers', host:'gcc', v:[V.M,V.F]},
+    {name:'Amazon SNS/SQS', sub:'Channel message queueing', host:'gcc', v:[V.A]},
+    {name:'AWS Glue Schema Registry', sub:'Kafka schema governance', host:'saas', v:[V.M,V.F]},
+  ]},
+  {title:'Compute & Orchestration', items:[
+    {name:'Amazon EKS', sub:'Agent runtime, FMS app, tools', host:'gcc', v:[V.S]},
+    {name:'AWS Lambda', sub:'Event-driven functions', host:'gcc', v:[V.S]},
+    {name:'Amazon EMR', sub:'Spark batch feature prep', host:'gcc', v:[V.M,V.F]},
+    {name:'Amazon MWAA', sub:'Pipeline orchestration', host:'gcc', v:[V.M,V.F]},
+    {name:'AWS Step Functions', sub:'Doc intake/task queueing', host:'gcc', v:[V.A]},
+    {name:'ElastiCache (Redis)', sub:'Dedup/fast lookup', host:'gcc', v:[V.A,V.F]},
+    {name:'Amazon DynamoDB', sub:'Session/case state', host:'gcc', v:[V.A,V.F]},
+  ]},
+  {title:'Storage & Connectivity', items:[
+    {name:'Amazon S3', sub:'Lake, RAG KB, model artifacts', host:'gcc', v:[V.S]},
+    {name:'PrivateLink / Transit Gateway', sub:'The only wire crossing GCC ↔ SaaS', host:'gcc', v:[V.S]},
+  ]},
+];
+main.innerHTML += `<div class="section">
+  <div class="section-head">Enabling AI/ML Services — Sheet 1 (31 services)</div>
+  <div class="infra-groups">
+    ${infraGroups.map(g=>`<div class="igroup"><div class="igroup-title">${g.title}</div>${g.items.map(chip).join('')}</div>`).join('')}
+  </div>
+</div><div class="flow-arrow">↓ reads from</div>`;
+
+// DATA LAYER
+main.innerHTML += `<div class="section">
+  <div class="section-head">Data Layer</div>
+  <div class="section-body data-bar">
+    <span class="pill">Bronze</span><span style="color:#9CA3AF;">→</span>
+    <span class="pill">Silver</span><span style="color:#9CA3AF;">→</span>
+    <span class="pill">Gold</span><span style="color:#9CA3AF;">→</span>
+    <span class="pill" style="background:#DCFCE7;">Amazon S3</span>
+    <span class="oos">(Bronze/Silver/Gold owned by Data Engineering — out of scope here; S3 is the handoff point.)</span>
+  </div>
+</div>`;
+
+// GOVERNANCE RAIL
+const rail = document.getElementById('rail');
+rail.innerHTML += `<div class="section">
+  <div class="section-head">Governance &amp; Security</div>
+  <div class="section-body" style="display:flex;flex-direction:column;gap:8px;">
+    ${[
+      {name:'IAM (Roles)', sub:'Cross-account/VPC auth', host:'gcc', v:[V.S]},
+      {name:'AWS Secrets Manager', sub:'Creds, API keys', host:'gcc', v:[V.S]},
+      {name:'AWS KMS', sub:'Encryption keys', host:'gcc', v:[V.S]},
+      {name:'Amazon CloudWatch', sub:'Model/agent/fraud monitoring', host:'gcc', v:[V.S]},
+      {name:'AWS CloudTrail', sub:'Agent & fraud audit trail', host:'gcc', v:[V.A,V.F]},
+      {name:'AWS WAF', sub:'Protects FMS app/APIs', host:'gcc', v:[V.F]},
+    ].map(chip).join('')}
+  </div>
+</div>`;
+
+</script>
+</body>
+</html>
