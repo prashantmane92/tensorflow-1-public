@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>OICL — Application-Level Architecture (v3)</title>
+<style>
+  :root{
+    --navy:#1E3A5F; --navy-dark:#152B47; --ink:#1F2937; --muted:#6B7280;
+    --gcc-bg:#FFFBEB; --gcc-border:#B45309;
+    --saas-bg:#EFF6FF; --saas-border:#2563EB;
+    --page:#F7F8FA;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0; padding:24px; background:var(--page); font-family:'Segoe UI',Arial,sans-serif; color:var(--ink);}
+  h1{font-size:20px; margin:0 0 2px 0; color:var(--navy-dark);}
+  .subtitle{font-size:12.5px; color:var(--muted); margin:0 0 16px 0;}
+
+  .legend{display:flex; flex-wrap:wrap; gap:16px; align-items:center; background:#fff;
+    border:1px solid #E2E5EA; border-radius:8px; padding:9px 16px; margin-bottom:16px; font-size:11.5px;}
+  .legend-item{display:flex; align-items:center; gap:6px;}
+  .swatch{width:13px; height:13px; border-radius:3px; display:inline-block;}
+
+  .flow-arrow{text-align:center; color:#9CA3AF; font-size:15px; margin:2px 0;}
+  .layout{display:grid; grid-template-columns:1fr 200px; gap:14px;}
+  .main{display:flex; flex-direction:column;}
+
+  .band{display:flex; flex-wrap:wrap; gap:8px; justify-content:center; background:#fff;
+    border:1px dashed #C9CDD3; border-radius:8px; padding:10px 14px;}
+  .pill{background:#F3F4F6; border-radius:20px; padding:5px 12px; font-size:11.5px;}
+
+  .section{background:#fff; border:1px solid #E2E5EA; border-radius:8px; overflow:hidden;}
+  .section-head{background:var(--navy); color:#fff; font-size:13px; font-weight:600; padding:7px 14px;}
+  .section-body{padding:10px 14px;}
+  .subrow-label{font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; margin:6px 0 4px 0;}
+  .chiprow{display:flex; flex-wrap:wrap; gap:8px;}
+
+  .chip{border-radius:5px; padding:5px 8px; font-size:11.5px; line-height:1.25;
+    display:flex; align-items:center; gap:6px; border-left:4px solid transparent;}
+  .chip .name{font-weight:600;} .chip .sub{display:block; font-weight:400; font-size:9.5px; color:var(--muted);}
+  .chip.gcc{background:var(--gcc-bg); border-left-color:var(--gcc-border);}
+  .chip.saas{background:var(--saas-bg); border-left-color:var(--saas-border);}
+  .chip.plain{background:#F3F4F6;}
+
+  .lanes{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; padding:10px;}
+  .lane{border:1px solid #E9EBEF; border-radius:6px; overflow:hidden; display:flex; flex-direction:column;}
+  .lane-head{color:#fff; font-size:12px; font-weight:700; padding:6px 10px; text-align:center;}
+  .lane.aiml .lane-head{background:#7C3AED;}
+  .lane.agentic .lane-head{background:#0D9488;}
+  .lane.fms .lane-head{background:#E11D48;}
+  .lane-body{padding:8px; display:flex; flex-direction:column-reverse; gap:4px;}
+  .step{border:1px solid #E9EBEF; border-radius:5px; padding:6px 7px; background:#FAFBFC;}
+  .step-title{font-size:10px; font-weight:700; color:var(--navy-dark); margin-bottom:4px;}
+  .step .chip{width:100%; margin-bottom:4px;}
+  .lane-arrow{text-align:center; color:#C7CBD1; font-size:12px;}
+
+  .backbone{background:#fff; border:1px solid #E2E5EA; border-radius:8px; padding:8px 14px; display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .backbone b{color:var(--navy-dark); font-size:11.5px; white-space:nowrap;}
+
+  .data-bar{display:flex; align-items:center; gap:10px; flex-wrap:wrap;}
+  .oos{font-size:10.5px; color:var(--muted); font-style:italic;}
+  .rail{display:flex; flex-direction:column; gap:12px;}
+</style>
+</head>
+<body>
+
+<h1>OICL — AI/ML, GenAI &amp; Agentic AI Architecture <span style="font-weight:400;color:var(--muted);">— v3</span></h1>
+<p class="subtitle">Services only, no use-case naming. Each vertical is a lane from S3 up to the Application Layer, with the pipeline steps (ingestion, embedding, feature prep, etc.) each one actually needs.</p>
+
+<div class="legend">
+  <div class="legend-item"><span class="swatch" style="background:var(--gcc-bg); border:1px solid var(--gcc-border);"></span> GCC-hosted</div>
+  <div class="legend-item"><span class="swatch" style="background:var(--saas-bg); border:1px solid var(--saas-border);"></span> AWS SaaS-hosted</div>
+</div>
+
+<div class="layout">
+  <div class="main" id="main"></div>
+  <div class="rail" id="rail"></div>
+</div>
+
+<script>
+const chip = s => `<div class="chip ${s.host||'plain'}">
+  <div><span class="name">${s.name}</span>${s.sub?`<span class="sub">${s.sub}</span>`:''}</div>
+</div>`;
+
+const main = document.getElementById('main');
+
+// USERS
+main.innerHTML += `<div class="band">
+  ${['Policyholders / Customers','Insurance Agents & Intermediaries','Claims Handlers / Surveyors','Underwriters','Business Users']
+    .map(u=>`<span class="pill">${u}</span>`).join('')}
+</div><div class="flow-arrow">↕ requests down / results up</div>`;
+
+// APPLICATION LAYER
+main.innerHTML += `<div class="section">
+  <div class="section-head">Application Layer</div>
+  <div class="section-body">
+    <div class="subrow-label">Channels</div>
+    <div class="chiprow">
+      ${['Web Portal','Mobile App','WhatsApp','IVR / Voice','Social Media','Agent360 / Customer360 Portal'].map(c=>`<span class="chip plain"><div class="name">${c}</div></span>`).join('')}
+    </div>
+    <div class="subrow-label">Orchestration &amp; API Services</div>
+    <div class="chiprow">
+      ${['API Gateway (Kong)','Auth &amp; Identity (Cognito/Keycloak)','FMS Case Management App','Agent/Bot Orchestrator','BI/Reporting (QuickSight)']
+        .map(c=>`<span class="chip plain"><div class="name">${c}</div></span>`).join('')}
+    </div>
+  </div>
+</div><div class="flow-arrow">↕ requests down / results up</div>`;
+
+// THREE VERTICAL LANES (each lane_body is column-reverse so array order = bottom-to-top / S3-to-app)
+function lane(cls, title, steps){
+  const stepsHtml = steps.map(s=>`<div class="step"><div class="step-title">${s.title}</div>${s.items.map(chip).join('')}</div>`).join(`<div class="lane-arrow">↑</div>`);
+  return `<div class="lane ${cls}"><div class="lane-head">${title}</div><div class="lane-body">${stepsHtml}</div></div>`;
+}
+
+const aiml = [
+  { title:'Feature Engineering & Orchestration', items:[
+    {name:'Amazon EMR', sub:'Spark batch feature prep', host:'gcc'},
+    {name:'AWS Glue Schema Registry', sub:'Stream schema governance', host:'saas'},
+    {name:'Amazon MWAA', sub:'Pipeline orchestration', host:'gcc'},
+  ]},
+  { title:'Model Training & Registry', items:[
+    {name:'Amazon SageMaker', sub:'Training, feature store, model registry', host:'gcc'},
+  ]},
+  { title:'Inference Services', items:[
+    {name:'Amazon Comprehend', sub:'NLP/sentiment', host:'gcc'},
+    {name:'Amazon Rekognition', sub:'Image analytics', host:'gcc'},
+    {name:'Amazon Textract', sub:'OCR/Document AI', host:'gcc'},
+    {name:'Amazon Bedrock + Guardrails', sub:'GenAI text generation', host:'saas'},
+  ]},
+];
+
+const agentic = [
+  { title:'RAG Ingestion & Embedding', items:[
+    {name:'AWS Step Functions', sub:'Ingestion workflow', host:'gcc'},
+    {name:'Amazon Bedrock', sub:'Titan embeddings', host:'saas'},
+    {name:'Amazon OpenSearch', sub:'Vector store', host:'gcc'},
+  ]},
+  { title:'Session & Memory State', items:[
+    {name:'Amazon DynamoDB', sub:'Agent session memory', host:'gcc'},
+    {name:'ElastiCache (Redis)', sub:'Fast lookup cache', host:'gcc'},
+  ]},
+  { title:'Agent Runtime & Reasoning', items:[
+    {name:'Bedrock AgentCore', sub:'Agent orchestration runtime', host:'gcc'},
+    {name:'Amazon Bedrock + Guardrails', sub:'LLM reasoning + safety', host:'saas'},
+  ]},
+  { title:'Tool & Channel Services', items:[
+    {name:'Amazon Textract', sub:'Document tool', host:'gcc'},
+    {name:'Amazon Transcribe', sub:'Speech-to-text (IVR)', host:'gcc'},
+    {name:'Amazon Polly', sub:'Text-to-speech (IVR)', host:'saas'},
+    {name:'Amazon SNS/SQS', sub:'Channel message queueing', host:'gcc'},
+  ]},
+];
+
+const fms = [
+  { title:'Real-time Ingestion', items:[
+    {name:'Amazon Kinesis', sub:'Transaction/claim event streams', host:'gcc'},
+    {name:'Amazon MSK', sub:'Event streaming backbone', host:'gcc'},
+    {name:'Amazon EventBridge', sub:'Alert triggers', host:'gcc'},
+  ]},
+  { title:'State & Cache', items:[
+    {name:'Amazon DynamoDB', sub:'Fraud case state', host:'gcc'},
+    {name:'ElastiCache (Redis)', sub:'Duplicate-claim detection', host:'gcc'},
+  ]},
+  { title:'Scoring & Link Analysis', items:[
+    {name:'Amazon SageMaker', sub:'Fraud scoring model', host:'gcc'},
+    {name:'Amazon Neptune', sub:'Fraud ring / link analysis', host:'gcc'},
+    {name:'Amazon OpenSearch', sub:'Case/log analytics', host:'gcc'},
+  ]},
+];
+
+main.innerHTML += `<div class="section">
+  <div class="section-head">AI/ML · Agentic AI · FMS Verticals</div>
+  <div class="lanes">
+    ${lane('aiml','AI/ML', aiml)}
+    ${lane('agentic','Agentic AI', agentic)}
+    ${lane('fms','FMS', fms)}
+  </div>
+</div><div class="flow-arrow">↑ reads from</div>`;
+
+// SHARED BACKBONE
+main.innerHTML += `<div class="backbone">
+  <b>Shared Compute &amp; Connectivity:</b>
+  ${[
+    {name:'Amazon EKS', sub:'Agent runtime, FMS app, ML tooling', host:'gcc'},
+    {name:'AWS Lambda', sub:'Event-driven functions', host:'gcc'},
+    {name:'PrivateLink / Transit Gateway', sub:'GCC ↔ SaaS connectivity', host:'gcc'},
+  ].map(chip).join('')}
+</div><div class="flow-arrow">↑ reads from</div>`;
+
+// DATA LAYER
+main.innerHTML += `<div class="section">
+  <div class="section-head">Data Layer</div>
+  <div class="section-body data-bar">
+    <span class="pill">Bronze</span><span style="color:#9CA3AF;">→</span>
+    <span class="pill">Silver</span><span style="color:#9CA3AF;">→</span>
+    <span class="pill">Gold</span><span style="color:#9CA3AF;">→</span>
+    <span class="pill" style="background:#DCFCE7;">Amazon S3</span>
+    <span class="oos">(Bronze/Silver/Gold owned by Data Engineering — out of scope; S3 is the handoff point all three verticals read from.)</span>
+  </div>
+</div>`;
+
+// GOVERNANCE RAIL
+const rail = document.getElementById('rail');
+rail.innerHTML += `<div class="section">
+  <div class="section-head">Governance &amp; Security</div>
+  <div class="section-body" style="display:flex;flex-direction:column;gap:8px;">
+    ${[
+      {name:'IAM (Roles)', sub:'Cross-account/VPC auth', host:'gcc'},
+      {name:'AWS Secrets Manager', sub:'Creds, API keys', host:'gcc'},
+      {name:'AWS KMS', sub:'Encryption keys', host:'gcc'},
+      {name:'Amazon CloudWatch', sub:'Monitoring', host:'gcc'},
+      {name:'AWS CloudTrail', sub:'Agent &amp; fraud audit trail', host:'gcc'},
+      {name:'AWS WAF', sub:'Protects FMS app/APIs', host:'gcc'},
+    ].map(chip).join('')}
+  </div>
+</div>`;
+</script>
+</body>
+</html>
