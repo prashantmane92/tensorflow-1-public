@@ -1,0 +1,179 @@
+<svg width="1600" height="1560" viewBox="0 0 1600 1560" xmlns="http://www.w3.org/2000/svg" role="img">
+<title>Insurance GenAI and Fraud Platform AWS Architecture</title>
+<desc>Data flows from the gold layer into Amazon S3, then into a GCC secure VPC boundary containing AI/ML, Agentic AI, and FMS vertical-specific services, cross-vertical shared services, shared infrastructure, and governance/security. A PrivateLink/Transit Gateway connector links to a separate SaaS boundary hosting Bedrock, Guardrails, Polly, and Glue Schema Registry.</desc>
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+<path d="M1 1L9 5L1 9" fill="none" stroke="#475569" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+</marker>
+</defs>
+<rect x="0" y="0" width="1600" height="1560" fill="#FFFFFF"/>
+<text x="800" y="45" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700" fill="#0F172A">Insurance GenAI &amp; Fraud Platform — AWS Architecture</text>
+<text x="800" y="72" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="14" fill="#64748B">Gold layer → S3 → AI/ML, Agentic AI &amp; FMS verticals, split across GCC and SaaS trust boundaries</text>
+<rect x="530" y="100" width="220" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="530" y="100" width="4" height="64" fill="#334155"/>
+<text x="546" y="124" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Gold layer</text>
+<text x="546" y="142" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Curated source data</text>
+<rect x="790" y="100" width="280" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="790" y="100" width="4" height="64" fill="#334155"/>
+<text x="806" y="124" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon S3</text>
+<text x="806" y="142" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Data lake landing zone, RAG KB, model artifacts</text>
+<line x1="750" y1="132" x2="788" y2="132" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="930" y1="164" x2="930" y2="206" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<rect x="40" y="210" width="1520" height="1044" rx="16" fill="#F4F6F8" stroke="#94A3B8" stroke-width="1.5" stroke-dasharray="8 4"/>
+<text x="800" y="248" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="700" fill="#334155">GCC boundary — secure VPC</text>
+<text x="800" y="270" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" fill="#64748B">Direct access to customer, claims, underwriting &amp; fraud data</text>
+<text x="300" y="318" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#0F766E">AI/ML services</text>
+<rect x="70" y="330" width="460" height="3" fill="#0F766E"/>
+<text x="800" y="318" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#6D28D9">Agentic AI services</text>
+<rect x="570" y="330" width="460" height="3" fill="#6D28D9"/>
+<text x="1300" y="318" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#C2410C">FMS services</text>
+<rect x="1070" y="330" width="460" height="3" fill="#C2410C"/>
+<rect x="70" y="345" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="70" y="345" width="4" height="64" fill="#0F766E"/>
+<text x="86" y="369" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon Comprehend</text>
+<text x="86" y="387" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Sentiment analysis, NLP query categorization</text>
+<rect x="70" y="421" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="70" y="421" width="4" height="64" fill="#0F766E"/>
+<text x="86" y="445" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon Rekognition</text>
+<text x="86" y="463" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Motor damage &amp; medical underwriting image analytics</text>
+<rect x="570" y="345" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="570" y="345" width="4" height="64" fill="#6D28D9"/>
+<text x="586" y="369" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Bedrock AgentCore</text>
+<text x="586" y="387" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Agent runtime: memory, gateway, identity, observability (24 agents)</text>
+<rect x="570" y="421" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="570" y="421" width="4" height="64" fill="#6D28D9"/>
+<text x="586" y="445" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon Transcribe</text>
+<text x="586" y="463" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Speech-to-text for IVR voice channel</text>
+<rect x="570" y="497" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="570" y="497" width="4" height="64" fill="#6D28D9"/>
+<text x="586" y="521" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">AWS Step Functions</text>
+<text x="586" y="539" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Document intake &amp; task queueing before agent processing</text>
+<rect x="570" y="573" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="570" y="573" width="4" height="64" fill="#6D28D9"/>
+<text x="586" y="597" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon SNS / SQS</text>
+<text x="586" y="615" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">WhatsApp, IVR, web &amp; social channel messaging into agents</text>
+<rect x="1070" y="345" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="1070" y="345" width="4" height="64" fill="#C2410C"/>
+<text x="1086" y="369" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon Neptune</text>
+<text x="1086" y="387" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Graph DB for fraud ring / link analysis</text>
+<rect x="1070" y="421" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="1070" y="421" width="4" height="64" fill="#C2410C"/>
+<text x="1086" y="445" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Kinesis Data Streams</text>
+<text x="1086" y="463" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Real-time transaction/claim event ingestion</text>
+<text x="800" y="695" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#334155">Cross-vertical shared services</text>
+<text x="800" y="715" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#64748B">Used by two of the three verticals</text>
+<rect x="70" y="730" width="276" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="70" y="730" width="4" height="64" fill="#475569"/>
+<text x="86" y="754" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon SageMaker</text>
+<text x="86" y="772" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Training, pipelines, model monitor</text>
+<text x="86" y="787" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">(AI/ML + FMS)</text>
+<rect x="366" y="730" width="276" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="366" y="730" width="4" height="64" fill="#475569"/>
+<text x="382" y="754" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon OpenSearch</text>
+<text x="382" y="772" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">RAG retrieval; case analytics</text>
+<text x="382" y="787" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">(Agentic AI + FMS)</text>
+<rect x="662" y="730" width="276" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="662" y="730" width="4" height="64" fill="#475569"/>
+<text x="678" y="754" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon Textract</text>
+<text x="678" y="772" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">OCR for claims/KYC docs</text>
+<text x="678" y="787" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">(AI/ML + Agentic AI)</text>
+<rect x="958" y="730" width="276" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="958" y="730" width="4" height="64" fill="#475569"/>
+<text x="974" y="754" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon MSK</text>
+<text x="974" y="772" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Real-time event streaming</text>
+<text x="974" y="787" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">(AI/ML + FMS)</text>
+<rect x="1254" y="730" width="276" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="1254" y="730" width="4" height="64" fill="#475569"/>
+<text x="1270" y="754" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon DynamoDB</text>
+<text x="1270" y="772" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Session memory; case state</text>
+<text x="1270" y="787" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">(Agentic AI + FMS)</text>
+<rect x="70" y="806" width="276" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="70" y="806" width="4" height="64" fill="#475569"/>
+<text x="86" y="830" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">ElastiCache Redis</text>
+<text x="86" y="848" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Dedup checks &amp; lookups</text>
+<text x="86" y="863" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">(Agentic AI + FMS)</text>
+<rect x="366" y="806" width="276" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="366" y="806" width="4" height="64" fill="#475569"/>
+<text x="382" y="830" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon EMR</text>
+<text x="382" y="848" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Spark batch feature prep</text>
+<text x="382" y="863" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">(AI/ML + FMS)</text>
+<rect x="662" y="806" width="276" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="662" y="806" width="4" height="64" fill="#475569"/>
+<text x="678" y="830" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon MWAA</text>
+<text x="678" y="848" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Orchestrates ML/fraud pipelines</text>
+<text x="678" y="863" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">(AI/ML + FMS)</text>
+<rect x="958" y="806" width="276" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="958" y="806" width="4" height="64" fill="#475569"/>
+<text x="974" y="830" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon EventBridge</text>
+<text x="974" y="848" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Pipeline &amp; alert triggers</text>
+<text x="974" y="863" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">(AI/ML + FMS)</text>
+<text x="800" y="928" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#334155">Shared infrastructure — all three verticals</text>
+<rect x="70" y="945" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="70" y="945" width="4" height="64" fill="#475569"/>
+<text x="86" y="969" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon EKS</text>
+<text x="86" y="987" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">One shared cluster: agent runtime, tooling, FMS case app</text>
+<rect x="570" y="945" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="570" y="945" width="4" height="64" fill="#475569"/>
+<text x="586" y="969" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">AWS Lambda</text>
+<text x="586" y="987" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Event-driven inference, tool calls &amp; scoring functions</text>
+<rect x="1070" y="945" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="1070" y="945" width="4" height="64" fill="#475569"/>
+<text x="1086" y="969" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">PrivateLink / Transit GW</text>
+<text x="1086" y="987" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Private connector at the GCC boundary edge</text>
+<text x="800" y="1067" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#334155">Governance &amp; security — spans all verticals</text>
+<rect x="70" y="1084" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="70" y="1084" width="4" height="64" fill="#334155"/>
+<text x="86" y="1108" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">IAM roles</text>
+<text x="86" y="1126" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Cross-account / cross-VPC authentication</text>
+<rect x="570" y="1084" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="570" y="1084" width="4" height="64" fill="#334155"/>
+<text x="586" y="1108" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">AWS Secrets Manager</text>
+<text x="586" y="1126" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">DB credentials &amp; API keys for GCC-hosted data</text>
+<rect x="1070" y="1084" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="1070" y="1084" width="4" height="64" fill="#334155"/>
+<text x="1086" y="1108" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">AWS KMS</text>
+<text x="1086" y="1126" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Encryption keys, critical for FMS PII</text>
+<rect x="70" y="1160" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="70" y="1160" width="4" height="64" fill="#334155"/>
+<text x="86" y="1184" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon CloudWatch</text>
+<text x="86" y="1202" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Model, agent &amp; fraud engine observability</text>
+<rect x="570" y="1160" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="570" y="1160" width="4" height="64" fill="#334155"/>
+<text x="586" y="1184" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">AWS CloudTrail</text>
+<text x="586" y="1202" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Agent decision &amp; fraud investigation audit trail</text>
+<rect x="1070" y="1160" width="460" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="1070" y="1160" width="4" height="64" fill="#334155"/>
+<text x="1086" y="1184" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">AWS WAF</text>
+<text x="1086" y="1202" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Protects FMS case management app &amp; APIs</text>
+<line x1="800" y1="1254" x2="800" y2="1292" stroke="#475569" stroke-width="2" marker-end="url(#arrow)"/>
+<text x="815" y="1276" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#64748B">PrivateLink / Transit Gateway</text>
+<rect x="150" y="1294" width="1300" height="160" rx="16" fill="#EAF2FB" stroke="#60A5FA" stroke-width="1.5" stroke-dasharray="8 4"/>
+<text x="800" y="1320" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="700" fill="#1E3A8A">SaaS boundary — AWS managed</text>
+<text x="800" y="1340" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#475569">Bounded prompt/context per call only — no persistence or direct DB access</text>
+<rect x="180" y="1360" width="287" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="180" y="1360" width="4" height="64" fill="#1D4ED8"/>
+<text x="196" y="1384" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon Bedrock</text>
+<text x="196" y="1402" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Claude &amp; Titan Embeddings FM backbone</text>
+<rect x="497" y="1360" width="287" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="497" y="1360" width="4" height="64" fill="#1D4ED8"/>
+<text x="513" y="1384" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Bedrock Guardrails</text>
+<text x="513" y="1402" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Grounding &amp; prompt-injection controls</text>
+<rect x="814" y="1360" width="287" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="814" y="1360" width="4" height="64" fill="#1D4ED8"/>
+<text x="830" y="1384" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Amazon Polly</text>
+<text x="830" y="1402" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Text-to-speech for IVR channel</text>
+<rect x="1131" y="1360" width="287" height="64" rx="6" fill="#FFFFFF" stroke="#CBD5E1" stroke-width="1"/>
+<rect x="1131" y="1360" width="4" height="64" fill="#1D4ED8"/>
+<text x="1147" y="1384" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="700" fill="#1E293B">Glue Schema Registry</text>
+<text x="1147" y="1402" font-family="Arial, Helvetica, sans-serif" font-size="11.5" fill="#64748B">Kafka schema governance</text>
+<rect x="300" y="1482" width="14" height="14" rx="3" fill="#0F766E"/>
+<text x="320" y="1494" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#334155">AI/ML</text>
+<rect x="395" y="1482" width="14" height="14" rx="3" fill="#6D28D9"/>
+<text x="415" y="1494" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#334155">Agentic AI</text>
+<rect x="525" y="1482" width="14" height="14" rx="3" fill="#C2410C"/>
+<text x="545" y="1494" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#334155">FMS</text>
+<rect x="606" y="1482" width="14" height="14" rx="3" fill="#475569"/>
+<text x="626" y="1494" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#334155">Shared / governance</text>
+<rect x="799" y="1482" width="14" height="14" rx="3" fill="#1D4ED8"/>
+<text x="819" y="1494" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#334155">SaaS</text>
+</svg>
